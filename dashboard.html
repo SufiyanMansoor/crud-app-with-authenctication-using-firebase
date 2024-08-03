@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap">
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: url('https://media.istockphoto.com/id/865135920/photo/concrete-texture.webp?b=1&s=170667a&w=0&k=20&c=AsJ3zrwaKUrrxWlKA2vAy6bIhrK6U3AAljCT_bAJfis=') no-repeat center center fixed;
+            background-size: cover;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            position: fixed;
+            height: 100%;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar img {
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            margin-bottom: 20px;
+        }
+
+        .sidebar h4 {
+            margin-top: 10px;
+            color: white;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 0;
+            display: block;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background-color: #0056b3;
+            border-radius: 5px;
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            width: calc(100% - 250px);
+            overflow-y: auto;
+        }
+
+        .btn-custom {
+            background-color: #007bff;
+            border: none;
+            color: white;
+            border-radius: 25px;
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            background-color: #0056b3;
+        }
+
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .header {
+            background-color: #0056b3;
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            border-radius: 25px;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .item {
+            margin-bottom: 10px;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .item button {
+            margin-left: 10px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .item button:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <div class="text-center">
+            <img src="https://via.placeholder.com/100" alt="Profile Image">
+            <h4>Sufiyan Bawany</h4>
+        </div>
+        <a href="#profile">Profile</a>
+        <a href="#crud">CRUD Operations</a>
+        <a href="#settings">Settings</a>
+        <a href="#" id="logoutButton">Logout</a>
+    </div>
+    <div class="content">
+        <div class="header">
+            <h1>Dashboard</h1>
+        </div>
+        <div class="container mt-4">
+            <div id="crud" class="row">
+                <div class="col-md-12">
+                    <div class="card p-4">
+                        <div class="card-body">
+                            <h5 class="card-title">CRUD Operations</h5>
+                            <div class="form-group">
+                                <input type="text" id="itemName" class="form-control" placeholder="Enter item name">
+                            </div>
+                            <button id="createButton" class="btn btn-custom">Create Item</button>
+                            <ul id="itemList" class="mt-3"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBrozazM210INhA16FdkZwrsCIopJZt2zE",
+            authDomain: "bawcrudapp.firebaseapp.com",
+            databaseURL: "https://bawcrudapp-default-rtdb.firebaseio.com",
+            projectId: "bawcrudapp",
+            storageBucket: "bawcrudapp.appspot.com",
+            messagingSenderId: "585007087554",
+            appId: "1:585007087554:web:af45fff4d20e2e0738205b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        document.getElementById('logoutButton').addEventListener('click', () => {
+            signOut(auth).then(() => {
+                window.location.href = 'signin.html';
+            }).catch((error) => {
+                console.error("Sign out error:", error);
+            });
+        });
+
+        const createData = async (data) => {
+            try {
+                const docRef = await addDoc(collection(db, "items"), data);
+                console.log("Document written with ID: ", docRef.id);
+                readData();
+            } catch (error) {
+                console.error("Error adding document: ", error);
+            }
+        };
+
+        const readData = async () => {
+            try {
+                const querySnapshot = await getDocs(collection(db, "items"));
+                let items = "";
+                querySnapshot.forEach((doc) => {
+                    const item = doc.data();
+                    items += `<li class="item">${item.name} - ${item.created_at.toDate().toLocaleString()} <button onclick="updateData('${doc.id}', 'Updated Item')">Update</button> <button onclick="deleteData('${doc.id}')">Delete</button></li>`;
+                });
+                document.getElementById('itemList').innerHTML = items;
+            } catch (error) {
+                console.error("Error getting documents: ", error);
+            }
+        };
+
+        const updateData = async (id, updatedData) => {
+            try {
+                const itemRef = doc(db, "items", id);
+                await updateDoc(itemRef, { name: updatedData, updated_at: serverTimestamp() });
+                console.log("Document successfully updated!");
+                readData();
+            } catch (error) {
+                console.error("Error updating document: ", error);
+            }
+        };
+
+        const deleteData = async (id) => {
+            try {
+                const itemRef = doc(db, "items", id);
+                await deleteDoc(itemRef);
+                console.log("Document successfully deleted!");
+                readData();
+            } catch (error) {
+                console.error("Error removing document: ", error);
+            }
+        };
+
+        document.getElementById('createButton').addEventListener('click', () => {
+            const itemName = document.getElementById('itemName').value;
+            if (itemName) {
+                createData({ name: itemName, created_at: serverTimestamp() });
+                document.getElementById('itemName').value = '';
+            }
+        });
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                readData();
+            } else {
+                window.location.href = 'signin.html';
+            }
+        });
+    </script>
+</body>
+
+</html>

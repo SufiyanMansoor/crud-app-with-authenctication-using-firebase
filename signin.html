@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap">
+    <style>
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            background: url('https://media.istockphoto.com/id/865135920/photo/concrete-texture.webp?b=1&s=170667a&w=0&k=20&c=AsJ3zrwaKUrrxWlKA2vAy6bIhrK6U3AAljCT_bAJfis=') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-control {
+            border-radius: 25px;
+            border: 1px solid #007bff;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            border-radius: 25px;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .was-validated .form-control:valid {
+            border-color: #28a745;
+        }
+
+        .was-validated .form-control:invalid {
+            border-color: #dc3545;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="d-flex justify-content-center align-items-center" style="height: 100%;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                    <div class="card p-4 my-5">
+                        <div class="card-body">
+                            <h3 class="card-title text-center">Sign In</h3>
+                            <form id="signinForm" class="needs-validation" novalidate>
+                                <div class="form-group">
+                                    <label for="signinEmail">Email address</label>
+                                    <input type="email" class="form-control" id="signinEmail" placeholder="Enter email"
+                                        required>
+                                    <div class="invalid-feedback">Please enter a valid email address.</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="signinPassword">Password</label>
+                                    <input type="password" class="form-control" id="signinPassword"
+                                        placeholder="Password" required>
+                                    <div class="invalid-feedback">Please enter a password.</div>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+                            </form>
+                            <hr>
+                            <p class="text-center">Don't have an account? <a href="signup.html"
+                                    style="color: #007bff;">Sign Up</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBrozazM210INhA16FdkZwrsCIopJZt2zE",
+            authDomain: "bawcrudapp.firebaseapp.com",
+            databaseURL: "https://bawcrudapp-default-rtdb.firebaseio.com",
+            projectId: "bawcrudapp",
+            storageBucket: "bawcrudapp.appspot.com",
+            messagingSenderId: "585007087554",
+            appId: "1:585007087554:web:af45fff4d20e2e0738205b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        document.getElementById('signinForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            const form = event.target;
+
+            if (form.checkValidity()) {
+                const email = document.getElementById('signinEmail').value;
+                const password = document.getElementById('signinPassword').value;
+                signInWithEmailAndPassword(auth, email, password)
+                    .then(() => window.location.href = 'dashboard.html')
+                    .catch((error) => alert(error.message));
+            }
+
+            form.classList.add('was-validated');
+        });
+    </script>
+
+
+</body>
+
+</html>
